@@ -1,0 +1,736 @@
+{
+  "config": {
+    "n_examples": 400,
+    "n_cal_benign": 200,
+    "n_test_benign": 200,
+    "n_attack_targets": 181,
+    "attacks": [
+      "char",
+      "word",
+      "genetic"
+    ],
+    "budgets": [
+      0.0,
+      0.05,
+      0.1,
+      0.2
+    ],
+    "block_threshold": 0.5,
+    "max_queries": 40,
+    "min_similarity": 0.75,
+    "seed": 42,
+    "signal": "single",
+    "mock": false,
+    "dataset": "jigsaw_toxicity_pred",
+    "primary": "unitary/toxic-bert",
+    "benign_source": "jigsaw_hard"
+  },
+  "standard_attacks": {
+    "char": {
+      "binary_asr": {
+        "asr": 0.105,
+        "ci_low": 0.0608,
+        "ci_high": 0.1547,
+        "n": 181,
+        "confidence_level": 0.95
+      },
+      "avg_queries": 7.3481,
+      "avg_similarity": 0.8774
+    },
+    "word": {
+      "binary_asr": {
+        "asr": 0.3481,
+        "ci_low": 0.2818,
+        "ci_high": 0.4199,
+        "n": 181,
+        "confidence_level": 0.95
+      },
+      "avg_queries": 25.4088,
+      "avg_similarity": 0.8735
+    },
+    "genetic": {
+      "binary_asr": {
+        "asr": 0.1823,
+        "ci_low": 0.1271,
+        "ci_high": 0.2376,
+        "n": 181,
+        "confidence_level": 0.95
+      },
+      "avg_queries": 35.8011,
+      "avg_similarity": 0.9089
+    }
+  },
+  "by_budget": [
+    {
+      "review_budget": 0.0,
+      "lower_edge": null,
+      "calibration": {
+        "lower_edge": null,
+        "k_allowed": 0,
+        "n_calibration": 200,
+        "review_budget": 0.0
+      },
+      "test_benign_decisions": {
+        "block": 0.08,
+        "defer": 0.0,
+        "allow": 0.92,
+        "n": 200
+      },
+      "test_benign_review_rate": {
+        "asr": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "n": 200,
+        "confidence_level": 0.95
+      },
+      "budget_respected_on_test": true,
+      "clean_toxic_decisions": {
+        "block": 0.905,
+        "defer": 0.0,
+        "allow": 0.095,
+        "n": 200
+      },
+      "attacks": {
+        "char": {
+          "binary_asr_no_band": {
+            "asr": 0.105,
+            "ci_low": 0.0608,
+            "ci_high": 0.1547,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "standard_attack_asr_with_band": {
+            "asr": 0.105,
+            "ci_low": 0.0608,
+            "ci_high": 0.1547,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "adaptive_attack_asr_with_band": {
+            "asr": 0.105,
+            "ci_low": 0.0608,
+            "ci_high": 0.1547,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "asr_reduction_vs_no_band": {
+            "asr_difference": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "mcnemar_no_band_vs_adaptive": {
+            "statistic": 0.0,
+            "p_value": 1.0,
+            "b_a_only": 0,
+            "c_b_only": 0,
+            "significant_at_0.05": false,
+            "odds_ratio": 1.0,
+            "note": "no discordant pairs",
+            "holm": {
+              "p_value": 1.0,
+              "p_value_holm_adjusted": 1.0,
+              "significant_after_correction": false
+            }
+          },
+          "adaptive_avg_queries": 7.3481,
+          "adaptive_avg_similarity_of_successes": 0.8149
+        },
+        "word": {
+          "binary_asr_no_band": {
+            "asr": 0.3481,
+            "ci_low": 0.2818,
+            "ci_high": 0.4199,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "standard_attack_asr_with_band": {
+            "asr": 0.3481,
+            "ci_low": 0.2818,
+            "ci_high": 0.4199,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "adaptive_attack_asr_with_band": {
+            "asr": 0.3481,
+            "ci_low": 0.2818,
+            "ci_high": 0.4199,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "asr_reduction_vs_no_band": {
+            "asr_difference": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "mcnemar_no_band_vs_adaptive": {
+            "statistic": 0.0,
+            "p_value": 1.0,
+            "b_a_only": 0,
+            "c_b_only": 0,
+            "significant_at_0.05": false,
+            "odds_ratio": 1.0,
+            "note": "no discordant pairs",
+            "holm": {
+              "p_value": 1.0,
+              "p_value_holm_adjusted": 1.0,
+              "significant_after_correction": false
+            }
+          },
+          "adaptive_avg_queries": 25.4088,
+          "adaptive_avg_similarity_of_successes": 0.8545
+        },
+        "genetic": {
+          "binary_asr_no_band": {
+            "asr": 0.1823,
+            "ci_low": 0.1271,
+            "ci_high": 0.2376,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "standard_attack_asr_with_band": {
+            "asr": 0.1823,
+            "ci_low": 0.1271,
+            "ci_high": 0.2376,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "adaptive_attack_asr_with_band": {
+            "asr": 0.1823,
+            "ci_low": 0.1271,
+            "ci_high": 0.2376,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "asr_reduction_vs_no_band": {
+            "asr_difference": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "mcnemar_no_band_vs_adaptive": {
+            "statistic": 0.0,
+            "p_value": 1.0,
+            "b_a_only": 0,
+            "c_b_only": 0,
+            "significant_at_0.05": false,
+            "odds_ratio": 1.0,
+            "note": "no discordant pairs",
+            "holm": {
+              "p_value": 1.0,
+              "p_value_holm_adjusted": 1.0,
+              "significant_after_correction": false
+            }
+          },
+          "adaptive_avg_queries": 35.8011,
+          "adaptive_avg_similarity_of_successes": 0.8997
+        }
+      }
+    },
+    {
+      "review_budget": 0.05,
+      "lower_edge": 0.247538,
+      "calibration": {
+        "lower_edge": 0.24753773212432864,
+        "k_allowed": 9,
+        "n_calibration": 200,
+        "review_budget": 0.05
+      },
+      "test_benign_decisions": {
+        "block": 0.08,
+        "defer": 0.045,
+        "allow": 0.875,
+        "n": 200
+      },
+      "test_benign_review_rate": {
+        "asr": 0.045,
+        "ci_low": 0.02,
+        "ci_high": 0.075,
+        "n": 200,
+        "confidence_level": 0.95
+      },
+      "budget_respected_on_test": true,
+      "clean_toxic_decisions": {
+        "block": 0.905,
+        "defer": 0.075,
+        "allow": 0.02,
+        "n": 200
+      },
+      "attacks": {
+        "char": {
+          "binary_asr_no_band": {
+            "asr": 0.105,
+            "ci_low": 0.0608,
+            "ci_high": 0.1547,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "standard_attack_asr_with_band": {
+            "asr": 0.0552,
+            "ci_low": 0.0221,
+            "ci_high": 0.0939,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "adaptive_attack_asr_with_band": {
+            "asr": 0.0552,
+            "ci_low": 0.0221,
+            "ci_high": 0.0939,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "asr_reduction_vs_no_band": {
+            "asr_difference": 0.0497,
+            "ci_low": 0.0221,
+            "ci_high": 0.0829,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "mcnemar_no_band_vs_adaptive": {
+            "statistic": 7.1111,
+            "p_value": 0.007661,
+            "b_a_only": 9,
+            "c_b_only": 0,
+            "odds_ratio": 19.0,
+            "significant_at_0.05": true,
+            "holm": {
+              "p_value": 0.007661,
+              "p_value_holm_adjusted": 0.030644,
+              "significant_after_correction": true
+            }
+          },
+          "adaptive_avg_queries": 7.3481,
+          "adaptive_avg_similarity_of_successes": 0.8105
+        },
+        "word": {
+          "binary_asr_no_band": {
+            "asr": 0.3481,
+            "ci_low": 0.2818,
+            "ci_high": 0.4199,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "standard_attack_asr_with_band": {
+            "asr": 0.1436,
+            "ci_low": 0.0939,
+            "ci_high": 0.1989,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "adaptive_attack_asr_with_band": {
+            "asr": 0.2376,
+            "ci_low": 0.1768,
+            "ci_high": 0.3039,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "asr_reduction_vs_no_band": {
+            "asr_difference": 0.1105,
+            "ci_low": 0.0663,
+            "ci_high": 0.1547,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "mcnemar_no_band_vs_adaptive": {
+            "statistic": 18.05,
+            "p_value": 2.2e-05,
+            "b_a_only": 20,
+            "c_b_only": 0,
+            "odds_ratio": 41.0,
+            "significant_at_0.05": true,
+            "holm": {
+              "p_value": 2.2e-05,
+              "p_value_holm_adjusted": 0.000198,
+              "significant_after_correction": true
+            }
+          },
+          "adaptive_avg_queries": 25.9503,
+          "adaptive_avg_similarity_of_successes": 0.8475
+        },
+        "genetic": {
+          "binary_asr_no_band": {
+            "asr": 0.1823,
+            "ci_low": 0.1271,
+            "ci_high": 0.2376,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "standard_attack_asr_with_band": {
+            "asr": 0.0939,
+            "ci_low": 0.0552,
+            "ci_high": 0.1381,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "adaptive_attack_asr_with_band": {
+            "asr": 0.0939,
+            "ci_low": 0.0552,
+            "ci_high": 0.1381,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "asr_reduction_vs_no_band": {
+            "asr_difference": 0.0884,
+            "ci_low": 0.0497,
+            "ci_high": 0.1326,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "mcnemar_no_band_vs_adaptive": {
+            "statistic": 14.0625,
+            "p_value": 0.000177,
+            "b_a_only": 16,
+            "c_b_only": 0,
+            "odds_ratio": 33.0,
+            "significant_at_0.05": true,
+            "holm": {
+              "p_value": 0.000177,
+              "p_value_holm_adjusted": 0.001239,
+              "significant_after_correction": true
+            }
+          },
+          "adaptive_avg_queries": 37.6243,
+          "adaptive_avg_similarity_of_successes": 0.8934
+        }
+      }
+    },
+    {
+      "review_budget": 0.1,
+      "lower_edge": 0.145802,
+      "calibration": {
+        "lower_edge": 0.14580160379409793,
+        "k_allowed": 19,
+        "n_calibration": 200,
+        "review_budget": 0.1
+      },
+      "test_benign_decisions": {
+        "block": 0.08,
+        "defer": 0.09,
+        "allow": 0.83,
+        "n": 200
+      },
+      "test_benign_review_rate": {
+        "asr": 0.09,
+        "ci_low": 0.055,
+        "ci_high": 0.13,
+        "n": 200,
+        "confidence_level": 0.95
+      },
+      "budget_respected_on_test": true,
+      "clean_toxic_decisions": {
+        "block": 0.905,
+        "defer": 0.08,
+        "allow": 0.015,
+        "n": 200
+      },
+      "attacks": {
+        "char": {
+          "binary_asr_no_band": {
+            "asr": 0.105,
+            "ci_low": 0.0608,
+            "ci_high": 0.1547,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "standard_attack_asr_with_band": {
+            "asr": 0.0387,
+            "ci_low": 0.011,
+            "ci_high": 0.0663,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "adaptive_attack_asr_with_band": {
+            "asr": 0.0387,
+            "ci_low": 0.011,
+            "ci_high": 0.0663,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "asr_reduction_vs_no_band": {
+            "asr_difference": 0.0663,
+            "ci_low": 0.0331,
+            "ci_high": 0.105,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "mcnemar_no_band_vs_adaptive": {
+            "statistic": 10.0833,
+            "p_value": 0.001496,
+            "b_a_only": 12,
+            "c_b_only": 0,
+            "odds_ratio": 25.0,
+            "significant_at_0.05": true,
+            "holm": {
+              "p_value": 0.001496,
+              "p_value_holm_adjusted": 0.00748,
+              "significant_after_correction": true
+            }
+          },
+          "adaptive_avg_queries": 7.3481,
+          "adaptive_avg_similarity_of_successes": 0.8123
+        },
+        "word": {
+          "binary_asr_no_band": {
+            "asr": 0.3481,
+            "ci_low": 0.2818,
+            "ci_high": 0.4199,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "standard_attack_asr_with_band": {
+            "asr": 0.0884,
+            "ci_low": 0.0497,
+            "ci_high": 0.1326,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "adaptive_attack_asr_with_band": {
+            "asr": 0.1878,
+            "ci_low": 0.1326,
+            "ci_high": 0.2486,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "asr_reduction_vs_no_band": {
+            "asr_difference": 0.1602,
+            "ci_low": 0.105,
+            "ci_high": 0.2099,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "mcnemar_no_band_vs_adaptive": {
+            "statistic": 27.0345,
+            "p_value": 0.0,
+            "b_a_only": 29,
+            "c_b_only": 0,
+            "odds_ratio": 59.0,
+            "significant_at_0.05": true,
+            "holm": {
+              "p_value": 0.0,
+              "p_value_holm_adjusted": 0.0,
+              "significant_after_correction": true
+            }
+          },
+          "adaptive_avg_queries": 26.2597,
+          "adaptive_avg_similarity_of_successes": 0.8492
+        },
+        "genetic": {
+          "binary_asr_no_band": {
+            "asr": 0.1823,
+            "ci_low": 0.1271,
+            "ci_high": 0.2376,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "standard_attack_asr_with_band": {
+            "asr": 0.0608,
+            "ci_low": 0.0276,
+            "ci_high": 0.0994,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "adaptive_attack_asr_with_band": {
+            "asr": 0.0718,
+            "ci_low": 0.0387,
+            "ci_high": 0.1105,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "asr_reduction_vs_no_band": {
+            "asr_difference": 0.1105,
+            "ci_low": 0.0663,
+            "ci_high": 0.1547,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "mcnemar_no_band_vs_adaptive": {
+            "statistic": 18.05,
+            "p_value": 2.2e-05,
+            "b_a_only": 20,
+            "c_b_only": 0,
+            "odds_ratio": 41.0,
+            "significant_at_0.05": true,
+            "holm": {
+              "p_value": 2.2e-05,
+              "p_value_holm_adjusted": 0.000198,
+              "significant_after_correction": true
+            }
+          },
+          "adaptive_avg_queries": 38.3425,
+          "adaptive_avg_similarity_of_successes": 0.891
+        }
+      }
+    },
+    {
+      "review_budget": 0.2,
+      "lower_edge": 0.077764,
+      "calibration": {
+        "lower_edge": 0.07776394486427309,
+        "k_allowed": 39,
+        "n_calibration": 200,
+        "review_budget": 0.2
+      },
+      "test_benign_decisions": {
+        "block": 0.08,
+        "defer": 0.18,
+        "allow": 0.74,
+        "n": 200
+      },
+      "test_benign_review_rate": {
+        "asr": 0.18,
+        "ci_low": 0.13,
+        "ci_high": 0.235,
+        "n": 200,
+        "confidence_level": 0.95
+      },
+      "budget_respected_on_test": true,
+      "clean_toxic_decisions": {
+        "block": 0.905,
+        "defer": 0.085,
+        "allow": 0.01,
+        "n": 200
+      },
+      "attacks": {
+        "char": {
+          "binary_asr_no_band": {
+            "asr": 0.105,
+            "ci_low": 0.0608,
+            "ci_high": 0.1547,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "standard_attack_asr_with_band": {
+            "asr": 0.0276,
+            "ci_low": 0.0055,
+            "ci_high": 0.0552,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "adaptive_attack_asr_with_band": {
+            "asr": 0.0276,
+            "ci_low": 0.0055,
+            "ci_high": 0.0552,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "asr_reduction_vs_no_band": {
+            "asr_difference": 0.0773,
+            "ci_low": 0.0387,
+            "ci_high": 0.116,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "mcnemar_no_band_vs_adaptive": {
+            "statistic": 12.0714,
+            "p_value": 0.000512,
+            "b_a_only": 14,
+            "c_b_only": 0,
+            "odds_ratio": 29.0,
+            "significant_at_0.05": true,
+            "holm": {
+              "p_value": 0.000512,
+              "p_value_holm_adjusted": 0.003072,
+              "significant_after_correction": true
+            }
+          },
+          "adaptive_avg_queries": 7.3481,
+          "adaptive_avg_similarity_of_successes": 0.7869
+        },
+        "word": {
+          "binary_asr_no_band": {
+            "asr": 0.3481,
+            "ci_low": 0.2818,
+            "ci_high": 0.4199,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "standard_attack_asr_with_band": {
+            "asr": 0.0773,
+            "ci_low": 0.0387,
+            "ci_high": 0.116,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "adaptive_attack_asr_with_band": {
+            "asr": 0.1547,
+            "ci_low": 0.105,
+            "ci_high": 0.2099,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "asr_reduction_vs_no_band": {
+            "asr_difference": 0.1934,
+            "ci_low": 0.1381,
+            "ci_high": 0.2486,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "mcnemar_no_band_vs_adaptive": {
+            "statistic": 33.0286,
+            "p_value": 0.0,
+            "b_a_only": 35,
+            "c_b_only": 0,
+            "odds_ratio": 71.0,
+            "significant_at_0.05": true,
+            "holm": {
+              "p_value": 0.0,
+              "p_value_holm_adjusted": 0.0,
+              "significant_after_correction": true
+            }
+          },
+          "adaptive_avg_queries": 26.5359,
+          "adaptive_avg_similarity_of_successes": 0.8354
+        },
+        "genetic": {
+          "binary_asr_no_band": {
+            "asr": 0.1823,
+            "ci_low": 0.1271,
+            "ci_high": 0.2376,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "standard_attack_asr_with_band": {
+            "asr": 0.0497,
+            "ci_low": 0.0221,
+            "ci_high": 0.0829,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "adaptive_attack_asr_with_band": {
+            "asr": 0.0552,
+            "ci_low": 0.0221,
+            "ci_high": 0.0939,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "asr_reduction_vs_no_band": {
+            "asr_difference": 0.1271,
+            "ci_low": 0.0829,
+            "ci_high": 0.1768,
+            "n": 181,
+            "confidence_level": 0.95
+          },
+          "mcnemar_no_band_vs_adaptive": {
+            "statistic": 21.0435,
+            "p_value": 4e-06,
+            "b_a_only": 23,
+            "c_b_only": 0,
+            "odds_ratio": 47.0,
+            "significant_at_0.05": true,
+            "holm": {
+              "p_value": 4e-06,
+              "p_value_holm_adjusted": 4e-05,
+              "significant_after_correction": true
+            }
+          },
+          "adaptive_avg_queries": 38.5249,
+          "adaptive_avg_similarity_of_successes": 0.8817
+        }
+      }
+    }
+  ]
+}

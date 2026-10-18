@@ -20,55 +20,67 @@ API is needed; the black-box API targets in Part 1 are optional.
 
 ## Results
 
-First full run: `unitary/toxic-bert`, Jigsaw toxic comments, 181 attacked
-toxic texts, 100 calibration and 100 test benign texts, single-model
-deferral signal. Brackets are 95% bootstrap confidence intervals.
+Ten runs on a free Colab GPU: three classifiers, three kinds of benign
+traffic, three seeds, and the ensemble signal. Every number below is the
+**adaptive** attacker (it knows the review band exists). Every run's
+results (with McNemar tests, Holm correction and query counts) and the
+combined table are in [`docs/results/`](docs/results/); `python
+deferral_report.py docs/results/*.json` regenerates all figures.
 
-![Attack success vs. human-review rate for the character, word-substitution and genetic attacks, standard and adaptive attackers](docs/figures/deferral_tradeoff_toxicbert_jigsaw.png)
+![Adaptive word-substitution attack success against human-review rate, for three classifiers and three kinds of benign traffic](docs/figures/deferral_robustness_word.png)
 
-**Attack success rate (ASR) against an adaptive attacker that knows the band**
+**Word-substitution attack, ~10% review budget (seed 42)**
 
-| Review budget | Benign texts sent to review (test set) | Character | Word substitution | Genetic |
-|---|---|---|---|---|
-| 0% (binary guardrail) | 0% | 10.5% | 37.6% [30.9, 44.2] | 17.1% |
-| 5% | 4.0% [1.0, 8.0] | 1.7% | 11.6% [7.2, 16.6] | 4.4% |
-| 10% | 6.0% [2.0, 11.0] | 1.7% | 6.6% [3.3, 10.5] | 2.8% |
-| 20% | 16.0% [9.0, 23.0] | 0.0% | 4.4% [1.7, 7.7] | 2.2% |
+| Classifier | Benign traffic | Benign sent to review | Attacks that get through: no band → with band |
+|---|---|---|---|
+| toxic-bert | Mild (Jigsaw) | 6.0% | 35% → **9%** |
+| toxic-bert | Strong language (Jigsaw) | 9.0% | 35% → **19%** |
+| toxic-bert | Other platform (HateXplain) | 7.5% | 36% → **30%** |
+| toxic-comment DistilBERT | Mild (Jigsaw) | 7.0% | 45% → **20%** |
+| toxic-comment DistilBERT | Strong language (Jigsaw) | 7.0% | 45% → **42%** (not significant) |
+| RoBERTa hate-speech | Mild (Jigsaw) | 9.0% | 41% → **21%** |
+| RoBERTa hate-speech | Strong language (Jigsaw) | 7.5% | 38% → **27%** |
 
 What this shows:
 
-- **A small review budget removes most evasions.** Sending about 4–6% of
-  benign text to review cuts the strongest attack (word substitution) from
-  37.6% to 11.6% at a 5% budget and 6.6% at a 10% budget. The realized
-  review rate stayed within budget at every level.
-- **Non-adaptive evaluation overstates the defense.** Against the standard
-  attacks, which stop as soon as they cross 0.5, the band at a 5% budget
-  appears to cut word-substitution success to 3.3%. The adaptive attacker
-  reaches 11.6%, about 3.5 times higher.
-- **The effects are significant.** Every reduction from the binary
-  guardrail is significant under paired McNemar tests with Holm-Bonferroni
-  correction across all budget × attack comparisons (adjusted p < 0.001 for
-  every attack at the 5% and 10% budgets).
-- **It also catches ordinary misses.** Without any attack, toxic-bert lets
-  9.5% of toxic comments through. With the 5% band, only 0.5% are allowed;
-  the rest go to review.
-- **Why it works on this model:** toxic-bert scores almost all benign Jigsaw
-  comments below 0.03, while attacked toxic texts usually land between that
-  and 0.5, where the band catches them.
+1. **On mild benign traffic, a small review band works for every model.**
+   At a ~10% budget the adaptive word attack's success drops by half to
+   three-quarters for all three classifiers, and every reduction is
+   significant after Holm correction. Across three seeds on toxic-bert it
+   falls from 31.8 ± 3.0% to 9.6 ± 3.3% while sending 5.7 ± 0.5% of benign
+   text to review.
+2. **How much it helps depends on how hard the benign traffic is.** When
+   the band must also leave room for benign comments with strong language,
+   it has to sit higher and catches less. toxic-bert keeps a real benefit
+   (35% → 19%); DistilBERT loses almost all of it (45% → 42%, not
+   significant). On HateXplain's normal posts, toxic-bert's benefit shrinks
+   to 36% → 30% at this budget.
+3. **Likely explanation: score separation.** The band can only start where
+   benign scores end. At a 10% budget, mild Jigsaw text lets the band start
+   at 0.011–0.062, but strong-language text pushes it up to 0.146
+   (toxic-bert) and 0.221 (DistilBERT, RoBERTa). Evaded toxic text that
+   lands below that edge gets through, and DistilBERT's evasions evidently
+   land there more often.
+4. **Non-adaptive evaluation overstates the band.** The standard attacker
+   (which stops at 0.5) never did better against the band than the
+   adaptive one, and did worse in 53 of 90 cases, mostly for the word and
+   genetic attacks; for toxic-bert on mild traffic at a 5% budget, 6.6%
+   against 12.2%. The character attack already pushes scores as low as it
+   can, so for it the two usually tie.
+5. **The review budget holds.** The realized review rate on held-out benign
+   text stayed within budget in 29 of 30 cases; the exception was 6.0%
+   against a 5% budget on 100 test texts, within sampling noise for a
+   guarantee that holds on average.
+6. **The ensemble ("defer if any model is suspicious") was a weaker signal**
+   than toxic-bert's own score (word attack 31% → 15% vs. 35% → 9% at a 10%
+   budget), because the other models score more benign text highly.
 
-ASR is the share of attacked toxic texts the guardrail ends up allowing.
-Full tables, McNemar tests with Holm correction, and query counts are in
-`results/deferral_summary_single.md` and `results/deferral_results_single.json`.
-
-**Caveats.** Results are from one model, one dataset and one run. Jigsaw's
-benign comments are mostly mild; benign but heated or profane text would
-score higher and make the band more expensive; `run_deferral_suite.sh`
-tests this directly with a "hard benign" set, plus all three classifiers
-and three seeds. The no-band word-attack ASR
-differed slightly between two runs on identical inputs (37.6% vs 34.2%),
-probably GPU non-determinism near the 0.5 threshold, so treat differences
-of a few points as noise. The ensemble signal is being rerun after a
-calibration fix (see `DEFERRAL.md`).
+**Caveats.** One dataset of attacked toxic text (Jigsaw), 102–185 attacked
+texts per run, attacks from this repo's search procedures (a stronger
+optimizer would do better, so adaptive ASR is a lower bound), and the
+"strong language" set is chosen by word list. Runs on identical inputs
+varied by a few points (e.g. word ASR 37.6% vs 35.4% for the same seed),
+probably GPU non-determinism near the 0.5 threshold.
 
 ## Quick start
 

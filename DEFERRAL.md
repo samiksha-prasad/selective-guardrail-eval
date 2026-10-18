@@ -121,34 +121,27 @@ baseline.
 - Higher adaptive query counts and lower similarity mean the band makes
   attacks more expensive or more visible, even where they still succeed.
 
-## Results (first run)
+## Results
 
-`unitary/toxic-bert`, Jigsaw, 181 attacked toxic texts, 100 calibration /
-100 test benign texts, single-model signal. ASR against the adaptive
-attacker, with 95% bootstrap CIs:
+See the Results section of the [README](README.md) for the summary table and
+figure, and [`docs/results/`](docs/results/) for every run's JSON, the
+combined table (`deferral_summary_all.md`), McNemar tests and query counts.
 
-| Review budget | Review rate on test benign | Char | Word | Genetic |
-|---|---|---|---|---|
-| 0% | 0% | 10.5% | 37.6% [30.9, 44.2] | 17.1% |
-| 5% | 4.0% [1.0, 8.0] | 1.7% | 11.6% [7.2, 16.6] | 4.4% |
-| 10% | 6.0% [2.0, 11.0] | 1.7% | 6.6% [3.3, 10.5] | 2.8% |
-| 20% | 16.0% [9.0, 23.0] | 0.0% | 4.4% [1.7, 7.7] | 2.2% |
+In short: on mild benign traffic, a review band of about 5–10% removes half
+to three-quarters of adaptive evasions for all three classifiers. On benign
+traffic with strong language, the benefit shrinks and becomes strongly
+model-dependent (toxic-bert keeps most of it; DistilBERT loses almost all
+of it), most likely because harder benign text forces the band to start
+higher. The standard (non-adaptive) attacker never did better against the
+band than the adaptive one and did worse in 53 of 90 cases, so evaluating
+the band only against non-adaptive attacks overstates it.
 
-At a 5% budget the standard (non-adaptive) word attack reaches only 3.3%
-under the band, against 11.6% for the adaptive attacker: evaluating the
-band only against attacks that stop at 0.5 would overstate it about 3.5×.
-All reductions from the binary guardrail are significant after Holm
-correction. Without any attack, the band also cuts toxic comments that
-toxic-bert lets through from 9.5% to 0.5% at the 5% budget.
+![Standard vs. adaptive attacker for toxic-bert on mild Jigsaw traffic](docs/figures/deferral_tradeoff_toxicbert_jigsaw.png)
 
-**Ensemble signal.** The first ensemble run showed that the other two
-classifiers already score some benign Jigsaw comments above 0.5. An earlier
-version of `calibrate_lower_edge` capped the edge at 0.5, which broke the
-budget for the ensemble (4% of benign text reviewed at a 0% budget). The
-cap is removed and covered by regression tests; the ensemble needs a rerun.
-In the unaffected rows (10% and 20%), the ensemble was a weaker signal than
-toxic-bert's own score (word ASR 12.2% vs 6.6% at 10%), because it must set
-a higher edge to stay within the same review budget.
+**Fixed bug.** An earlier version of `calibrate_lower_edge` capped the band
+at 0.5, which broke the review budget for the ensemble signal. The cap was
+removed and is covered by regression tests; all results above use the fixed
+code.
 
 ## Limitations
 

@@ -31,6 +31,18 @@ STANDARD = "#eb6834"
 
 SUMMARY_ALL_PATH = os.path.join(config.RESULTS_DIR, "deferral_summary_all.md")
 
+# Benign sources, in fixed slot order (validated all-pairs: blue, orange, aqua).
+BENIGN_STYLE = {
+    "jigsaw":      ("#2a78d6", "o", "Mild (Jigsaw)"),
+    "jigsaw_hard": ("#eb6834", "s", "Strong language (Jigsaw)"),
+    "hatexplain":  ("#1baf7a", "D", "Other platform (HateXplain)"),
+}
+SHORT_MODEL = {
+    "unitary/toxic-bert": "toxic-bert",
+    "martin-ha/toxic-comment-model": "toxic-comment DistilBERT",
+    "facebook/roberta-hate-speech-dynabench-r4-target": "RoBERTa hate-speech",
+}
+
 
 def load_runs(paths):
     runs = []
@@ -120,6 +132,88 @@ def plot_run(run, out_path):
     plt.close(fig)
 
 
+def plot_robustness(runs, out_path, attack="word", seed=None):
+    """
+    One panel per classifier: adaptive-attacker ASR for `attack` against the
+    realized benign review rate, one line per benign source. Shows whether the
+    band's value survives harder benign traffic. Single-signal runs only;
+    uses `seed` (default: config.RANDOM_SEED) so every line is comparable.
+    """
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    seed = config.RANDOM_SEED if seed is None else seed
+    by_model = defaultdict(dict)
+    for r in runs:
+        c = r["config"]
+        if c.get("signal", "single") != "single" or c.get("seed", seed) != seed:
+            continue
+        if attack not in c["attacks"]:
+            continue
+        by_model[c.get("primary", "unitary/toxic-bert")][c.get("benign_source", "jigsaw")] = r
+    models = [m for m in SHORT_MODEL if m in by_model] + [m for m in by_model if m not in SHORT_MODEL]
+    if not models:
+        return None
+
+    y_top = 0.0
+    for m in models:
+        for r in by_model[m].values():
+            for e in r["by_budget"]:
+                y_top = max(y_top, 100 * e["attacks"][attack]["adaptive_attack_asr_with_band"]["ci_high"])
+    y_top = max(5.0, y_top * 1.08)
+
+    fig, axes = plt.subplots(1, len(models), figsize=(4.3 * len(models), 4.0), sharey=True,
+                             facecolor=SURFACE)
+    if len(models) == 1:
+        axes = [axes]
+    for ax, m in zip(axes, models):
+        ax.set_facecolor(SURFACE)
+        for src in BENIGN_STYLE:
+            if src not in by_model[m]:
+                continue
+            color, marker, label = BENIGN_STYLE[src]
+            r = by_model[m][src]
+            xs = [100 * (e["test_benign_review_rate"]["asr"] or 0.0) for e in r["by_budget"]]
+            ad = [e["attacks"][attack]["adaptive_attack_asr_with_band"] for e in r["by_budget"]]
+            ys = [100 * a["asr"] for a in ad]
+            lo = [100 * (a["asr"] - a["ci_low"]) for a in ad]
+            hi = [100 * (a["ci_high"] - a["asr"]) for a in ad]
+            ax.errorbar(xs, ys, yerr=[lo, hi], color=color, lw=2, marker=marker, ms=7,
+                        capsize=0, elinewidth=1.2, alpha=0.95, markeredgecolor=SURFACE,
+                        markeredgewidth=1.5, label=label, zorder=3)
+            ax.annotate(f"{ys[-1]:.0f}%", (xs[-1], ys[-1]), textcoords="offset points",
+                        xytext=(7, -3), fontsize=9, color=TEXT)
+        ax.set_title(SHORT_MODEL.get(m, m), fontsize=11, color=TEXT, loc="left")
+        ax.set_xlabel("Benign texts sent to review (%)", fontsize=9, color=TEXT_2)
+        ax.grid(axis="y", color=GRID, lw=1)
+        ax.set_axisbelow(True)
+        for side in ("top", "right"):
+            ax.spines[side].set_visible(False)
+        for side in ("left", "bottom"):
+            ax.spines[side].set_color(GRID)
+        ax.tick_params(colors=TEXT_2, labelsize=9)
+        ax.set_xlim(-1, 22)
+        ax.set_ylim(0, y_top)
+    axes[0].set_ylabel("Attacks that get through (%)", fontsize=9, color=TEXT_2)
+    handles, labels = [], []
+    for ax in axes:
+        for h, l in zip(*ax.get_legend_handles_labels()):
+            if l not in labels:
+                handles.append(h); labels.append(l)
+    fig.legend(handles, labels, loc="lower center", ncol=len(labels), frameon=False,
+               fontsize=9, labelcolor=TEXT, title="Benign traffic the band is calibrated on",
+               title_fontsize=9)
+    name = {"char": "character", "word": "word-substitution", "genetic": "genetic"}.get(attack, attack)
+    fig.suptitle(f"Adaptive {name} attack vs. human-review cost, by classifier and benign traffic "
+                 f"(seed {seed}, 95% CI)", fontsize=10, color=TEXT_2, x=0.01, ha="left")
+    fig.tight_layout(rect=(0, 0.12, 1, 0.94))
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    fig.savefig(out_path, dpi=160, facecolor=SURFACE)
+    plt.close(fig)
+    return out_path
+
+
 def _pct(x):
     return "n/a" if x is None else f"{100 * x:.1f}%"
 
@@ -171,6 +265,11 @@ def main():
         out = os.path.join(config.FIGURES_DIR, f"deferral_tradeoff_{r['_tag']}.png")
         plot_run(r, out)
         print(f"figure: {out}")
+    for att in ("word", "char"):
+        out = plot_robustness(runs, os.path.join(config.FIGURES_DIR, f"deferral_robustness_{att}.png"),
+                              attack=att)
+        if out:
+            print(f"figure: {out}")
     table = combined_table(runs)
     os.makedirs(config.RESULTS_DIR, exist_ok=True)
     with open(SUMMARY_ALL_PATH, "w") as f:
